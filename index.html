@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
+<script src="pieces.js"></script>
+<script src="chessGame.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="index.css" rel="stylesheet" type="text/css" />
+
+<body class="w3-black">
+
+<!-- Icon Bar (Sidebar - hidden on small screens) -->
+<nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+  <!-- Avatar image in top left corner -->
+  <img src="scacchi.png" style="width:100%">
+  <a id="homeBtn" href="#" class="w3-bar-item w3-button w3-padding-large w3-black">
+    <i class="fa fa-home w3-xxlarge"></i>
+    <p>CHESS</p>
+  </a>
+  <a href="#about" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+    <i class="fa fa-user w3-xxlarge"></i>
+    <p>ABOUT</p>
+  </a>
+  <a href="#contact" class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+    <i class="fa fa-envelope w3-xxlarge"></i>
+    <p>CONTACTS</p>
+  </a>
+</nav>
+
+<!-- Navbar on small screens (Hidden on medium and large screens) -->
+<div class="w3-top w3-hide-large w3-hide-medium" id="myNavbar">
+  <div class="w3-bar w3-black w3-opacity w3-hover-opacity-off w3-center w3-small">
+    <a id="homeBtn" href="#" class="w3-bar-item w3-button" style="width:25% !important">CHESS</a>
+    <a href="#about" class="w3-bar-item w3-button" style="width:25% !important">ABOUT</a>
+    <a href="#contact" class="w3-bar-item w3-button" style="width:25% !important">CONTACTS</a>
+  </div>
+</div>
+
+<!-- Page Content -->
+<div class="w3-padding-large" id="main">
+  <!-- Header/Home -->
+  <header class="w3-container w3-padding-8 w3-center w3-black" id="home">
+    <h1 class="w3-jumbo"><span class="w3-hide-small">P2P </span>Chess</h1>
+
+<!-- Elementi per iniziare la partita -->
+<div id="initialElements"  style="width: 100%;">
+  <div  style="margin: 0 auto;width: 50%;">
+    <ul class="w3-ul w3-white w3-center ">
+      <li id="myIdlB" class="w3-dark-grey w3-large w3-padding-8">My ID:</li>
+      <li class="w3-padding-16">
+        <label id="otherIdLb" for="otherIdTB">Insert Opponent ID or wait for his connection</label><br><br>
+        <input  class="w3-input w3-border" type="text" id="otherIdTB" placeholder="Opponent ID"><br>
+        <button id="confirmBtn" class="w3-button w3-dark-grey w3-padding-8 w3-hover-grey">Send Request</button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Scacchiera ed elementi laterali inizialmente non visibili -->
+<div id="posizionescacchiera" style="display: none">
+  <canvas id="chessboard"class="w3-center"></canvas>
+
+  <div class="w3-quarter w3-margin-bottom w3-right">
+    <ul id= "myBox" class="w3-ul w3-white w3-center w3-opacity">
+      <li class="w3-dark-grey w3-large w3-padding-8">You</li>
+      <li id = "myTimer" class="w3-padding-8">00:00</li>
+    </ul>
+    <br>
+    <ul id= "oppBox" class="w3-ul w3-white w3-center">
+      <li class="w3-dark-grey w3-large w3-padding-8">Opponent</li>
+      <li id = "oppTimer" class="w3-padding-8">00:00</li>
+    </ul>
+    <br>
+    <ul id="infoBox" class="w3-ul w3-white w3-center">
+      <li id="turnCounter" class="w3-dark-grey w3-padding-8 w3-large">Turn 1</li>
+      <li>
+        <button id="resign" class="w3-button w3-dark-grey w3-hover-grey">Resign</button>
+      </li>
+    </ul>
+    <br>
+    <ul id= "endGameBox" class="w3-ul w3-white w3-center" style="display: none">
+      <li id = "reason" class="w3-dark-grey w3-xlarge w3-padding-16">Reason</li>
+      <li id = "winner" class="w3-large w3-padding-8">Winner</li>
+      <li>
+        <button id="rematchBtn" class="w3-button w3-dark-grey w3-padding-8 w3-hover-grey">Rematch</button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<br><br>
+<!-- Richiesta partita inviata -->
+<div id="requestSent"  style="width: 100%;display: none">
+  <div  style="margin: 0 auto;width: 50%;">
+    <ul class="w3-ul w3-white w3-center ">
+      <li class="w3-dark-grey w3-large w3-padding-8">Game Request</li>
+      <li class="w3-padding-16">
+        <label id="otherIdRequestSent" for="otherIdTB"></label><br><br>
+	  </li>
+    </ul>
+  </div>
+</div>
+
+<br><br>
+<!-- Richiesta partita ricevuta-->
+<div id="requestElements"  style="width: 100%;display: none">
+  <div  style="margin: 0 auto;width: 50%;">
+    <ul class="w3-ul w3-white w3-center ">
+      <li class="w3-dark-grey w3-large w3-padding-8">Game Request</li>
+      <li class="w3-padding-16">
+        <label id="otherIdLbRequest" for="otherIdTB"></label><br><br>
+        <button id="acceptGameBtn" class="w3-button w3-dark-grey w3-padding-8 w3-hover-grey">Accept</button>
+		    <button id="refuseGameBtn" class="w3-button w3-dark-grey w3-padding-8 w3-hover-grey">Refuse</button>
+	    </li>
+    </ul>
+  </div>
+</div>
+</header>
+
+<!-- About Section -->
+<div class="w3-content w3-justify w3-text-grey w3-padding-64" id="about">
+  <h2 class="w3-text-light-grey">Project Description</h2>
+  <hr style="width:200px" class="w3-opacity">
+  <p>
+  This is a university project made by Luca Bonelli and Gaspare Riccardo Lo Bue.
+  <br>
+  The objective is to create a JavaScript web application that allows two clients to play a Chess game via P2P connection.
+  <br>
+  This project uses the PeerJS open source library.
+  </p>
+  <h3 class="w3-padding-16 w3-text-light-grey">Hours of Work</h3>
+  <p class="w3-wide">JavaScript</p>
+  <div class="w3-white">
+    <div class="w3-dark-grey" style="height:28px;width:95%"></div>
+  </div>
+  <p class="w3-wide">PeerJS</p>
+  <div class="w3-white">
+    <div class="w3-dark-grey" style="height:28px;width:80%"></div>
+  </div>
+  <p class="w3-wide">Css</p>
+  <div class="w3-white">
+    <div class="w3-dark-grey" style="height:28px;width:65%"></div>
+  </div><br>
+
+  </div>
+
+
+
+<!-- Contact Section -->
+<div class="w3-padding-64 w3-content w3-text-grey" id="contact">
+  <h2 class="w3-text-light-grey">Contact Us</h2>
+  <hr style="width:200px" class="w3-opacity">
+
+  <div class="w3-section">
+  <p><i class="fa fa-map-marker fa-fw w3-text-white w3-xxxlarge w3-margin-right"></i> University of Parma </p>
+  <p><i class="fa fa-envelope fa-fw w3-text-white w3-xxxlarge w3-margin-right"> </i> Email: gasparericcardo.lobue@studenti.unipr.it        &        luca.bonelli@studenti.unipr.it</p>
+<!--
+<a class="fa fa-facebook-official w3-text-white w3-xxxlarge" href="https://www.facebook.com/riccardolobue16" target="_blank"   >   Facebook Lo Bue   </a>  	<a href="https://www.facebook.com/luca.bonelli.374" target="_blank" class="fa fa-facebook-official w3-text-white w3-xxxlarge" > Facebook Bonelli</a><br><br>
+<a class="fa fa-instagram w3-text-white w3-xxxlarge" href="https://www.instagram.com/riccardo_lobue/?hl=it" target="_blank"  >   Instagram Lo Bue   </a>   <a href="https://www.facebook.com/luca.bonelli.374" target="_blank" class="fa fa-instagram w3-text-white w3-xxxlarge" > Facebook Bonelli</a><br><br>
+-->
+<p><i class="fa fa-facebook-official fa-fw w3-text-white w3-xxxlarge w3-margin-right"></i> <a href="https://www.facebook.com/riccardolobue16" target="_blank"> Lo Bue </a> & <a href="https://www.facebook.com/luca.bonelli.374" target="_blank"> Bonelli</a></p>
+<p><i class="fa fa-instagram fa-fw w3-text-white w3-xxxlarge w3-margin-right"></i> <a href="https://www.instagram.com/riccardo_lobue/?hl=it" target="_blank"> Lo Bue </a> & <a href="https://www.instagram.com/bonno_99/?hl=it" target="_blank"> Bonelli</a></p>
+    </div><br>
+
+  <!-- End Contact Section -->
+  </div>
+
+
+<!-- END PAGE CONTENT -->
+</div>
+
+</body>
+</html>
